@@ -1,11 +1,16 @@
 import { useState } from "react";
 
+interface GovGuideResponse {
+  answer: string;
+  sources: string[];
+}
+
 export default function Home() {
   const [query, setQuery] = useState("");
-  const [response, setResponse] = useState(null);
+  const [response, setResponse] = useState<GovGuideResponse | null>(null);
 
   const handleAsk = async () => {
-    const res = await fetch("https://YOUR_RENDER_BACKEND_URL/ask", {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_GOVGUIDE_API_URL}/ask`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ query }),
