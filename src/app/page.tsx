@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 
 interface GovGuideResponse {
@@ -10,10 +12,15 @@ export default function Home() {
   const [response, setResponse] = useState<GovGuideResponse | null>(null);
 
   const handleAsk = async () => {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_GOVGUIDE_API_URL}/ask`, {
+    const url=process.env.NEXT_PUBLIC_GOVGUIDE_API_URL;
+    if (!url) {
+      console.error("NEXT_PUBLIC_GOVGUIDE_API_URL is not set");
+      return;
+    }
+    const res = await fetch(`${url}/ask`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ query }),
+      body: JSON.stringify({ question:query }),
     });
     const data = await res.json();
     setResponse(data);
@@ -41,13 +48,15 @@ export default function Home() {
           <p><strong>Answer:</strong> {response.answer}</p>
           <p className="mt-2"><strong>Sources:</strong></p>
           <ul>
-            {response.sources.map((src, i) => (
+            {response.sources && response.sources.length > 0 ? (response.sources.map((src, i) => (
               <li key={i}>
                 <a href={src} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">
                   {src}
                 </a>
               </li>
-            ))}
+            ))) : (
+              <li>No sources found.</li>
+            )}
           </ul>
         </div>
       )}
